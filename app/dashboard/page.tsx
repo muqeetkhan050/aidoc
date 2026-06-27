@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import AppointmentList from '@/components/appointments/AppointmentList'
-import { formatDate } from '@/lib/utils'
+import {formatDate} from '@/lib/utils'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
