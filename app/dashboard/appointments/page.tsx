@@ -56,8 +56,11 @@ export default async function AllAppointmentsPage() {
                   {appointment.source === 'ai_agent' ? 'AI Agent' :
                    appointment.source === 'whatsapp' ? 'WhatsApp' : 'Manual'}
                 </td>
+                   <button>confirm/cancel</button>   
               </tr>
+                 
             ))}
+      
           </tbody>
         </table>
 
@@ -65,6 +68,7 @@ export default async function AllAppointmentsPage() {
           <p className="text-center text-gray-400 py-12">No appointments found</p>
         )}
       </div>
+      
     </div>
   )
 }
