@@ -1,8 +1,7 @@
 import twilio from 'twilio'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Groq from 'groq-sdk'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
-const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 export async function POST(request: Request) {
   const formData = await request.formData()
@@ -19,10 +18,14 @@ export async function POST(request: Request) {
 
   async function extractWithFallback(prompt: string, fallback: string) {
     try {
-      const result = await model.generateContent(prompt)
-      return result.response.text().trim()
+      const result = await groq.chat.completions.create({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
+      })
+      const text = result.choices[0]?.message?.content
+      return text ? text.trim() : fallback
     } catch (error) {
-      console.error('Gemini extraction failed, using fallback:', error)
+      console.error('Groq extraction failed, using fallback:', error)
       return fallback
     }
   }
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
       const isYes = speechResult?.toLowerCase().includes('yes')
 
       if (isYes) {
-        await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXTAUTH_URL || 'http://localhost:3000' : 'http://localhost:3000'}/api/ai-booking`, {
+        const bookingResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXTAUTH_URL || 'http://localhost:3000' : 'http://localhost:3000'}/api/ai-booking`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -100,10 +103,19 @@ export async function POST(request: Request) {
           }),
         })
 
-        twiml.say(
-          { voice: 'Polly.Joanna' },
-          `Your appointment has been booked for ${date} at ${time}. We will see you then. Goodbye!`
-        )
+        if (bookingResponse.ok) {
+          twiml.say(
+            { voice: 'Polly.Joanna' },
+            `Your appointment has been booked for ${date} at ${time}. We will see you then. Goodbye!`
+          )
+        } else {
+          const errorBody = await bookingResponse.text()
+          console.error('ai-booking failed:', bookingResponse.status, errorBody)
+          twiml.say(
+            { voice: 'Polly.Joanna' },
+            "Sorry, I couldn't complete the booking due to a system error. Please call back in a moment or try again."
+          )
+        }
       } else {
         twiml.say(
           { voice: 'Polly.Joanna' },
