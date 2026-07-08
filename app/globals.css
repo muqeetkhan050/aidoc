@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@heroui/react/styles";
 
 :root {
   --background: #ffffff;

@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-
+import AppointmentActions from '@/components/appointments/AppointmentActions'
 export default async function AllAppointmentsPage() {
   const supabase = await createClient()
 
@@ -56,7 +56,9 @@ export default async function AllAppointmentsPage() {
                   {appointment.source === 'ai_agent' ? 'AI Agent' :
                    appointment.source === 'whatsapp' ? 'WhatsApp' : 'Manual'}
                 </td>
-                   <button>confirm/cancel</button>   
+            <td className="px-6 py-4">
+    <AppointmentActions id={appointment.id} />
+</td> 
               </tr>
                  
             ))}

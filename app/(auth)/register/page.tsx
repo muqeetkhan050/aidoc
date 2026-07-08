@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 export default function RegisterPage() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,6 +21,9 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: { name },
+      },
     })
 
     if (error) {
@@ -42,6 +46,19 @@ export default function RegisterPage() {
       )}
 
       <form onSubmit={handleRegister} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Email
