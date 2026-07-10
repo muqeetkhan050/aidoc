@@ -10,7 +10,8 @@ const navItems = [
   { href: '/dashboard', label: "Today's Appointments", icon: Calendar },
   { href: '/dashboard/appointments', label: 'All Appointments', icon: Calendar },
   { href: '/dashboard/patients', label: 'Patients', icon: Users },
-  { href: '/dashboard/pastRecord', label: 'Past Records', icon: Calendar }
+  { href: '/dashboard/pastRecord', label: 'Past Records', icon: Calendar },
+  { href: '/dashboard/history', label: 'History', icon: Calendar },
 ]
 
 export default function Sidebar({ user }: { user: { email?: string } }) {
